@@ -10,34 +10,31 @@ import UIKit
 
 class DetailViewController: UIViewController {
 
-    @IBOutlet weak var detailDescriptionLabel: UILabel!
+    @IBOutlet weak var taskText: UITextField!
+    @IBOutlet weak var dueDatePicker: UIDatePicker!
 
-
-    var detailItem: AnyObject? {
-        didSet {
-            // Update the view.
-            self.configureView()
+    var todo: Todo?
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let t = self.todo {
+            taskText!.text = t.task
+            dueDatePicker!.date = t.due
         }
     }
-
-    func configureView() {
-        // Update the user interface for the detail item.
-        if let detail: AnyObject = self.detailItem {
-            if let label = self.detailDescriptionLabel {
-                label.text = detail.description
-            }
-        }
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        self.todo?.task = taskText!.text
+        self.todo?.due  = dueDatePicker!.date
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        self.configureView()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
 
