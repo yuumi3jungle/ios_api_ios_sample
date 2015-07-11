@@ -14,23 +14,21 @@ class MasterViewController: UITableViewController {
     var lastUpdateIndexPath: NSIndexPath? = nil
 
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
 
         let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "insertNewTodo:")
         self.navigationItem.rightBarButtonItem = addButton
+        Todo.getAllServerData({serverTodos in
+            self.todos = serverTodos
+            self.tableView.reloadData()
+        })
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+     }
 
     func insertNewTodo(sender: AnyObject) {
         todos.insert(Todo(), atIndex: todos.count)
@@ -56,6 +54,7 @@ class MasterViewController: UITableViewController {
         let controller = segue.sourceViewController as! DetailViewController
         if let index = lastUpdateIndexPath, todo = controller.todo {
             todos[index.row] = todo
+            todo.updateServerData({ println("-- updated")})
             tableView.reloadRowsAtIndexPaths([index], withRowAnimation: .None)
         }
     }
@@ -82,6 +81,7 @@ class MasterViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
+            todos[indexPath.row].deleteServerData({ println("-- deleted") })
             todos.removeAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
